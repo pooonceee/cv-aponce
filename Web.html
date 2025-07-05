@@ -1,0 +1,1313 @@
+<!DOCTYPE html>
+<html lang="en" style="scroll-behavior: smooth;">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Name - Digital CV</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: radial-gradient(circle at top left, #0a0a0a 0%, #000000 100%);
+            color: #e2e8f0;
+            min-height: 100vh;
+            overflow: hidden; /* Hide default body scrollbars */
+            position: relative;
+        }
+
+        #neon-background-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .neon-text-main {
+            /* Further reduced blue neon glow for main heading */
+            text-shadow:
+                0 0 1px #00FFFF, /* Much less blur */
+                0 0 2px #00FFFF,
+                0 0 4px #3B82F6;
+            animation: flicker 1.5s infinite alternate;
+        }
+        .neon-text-section {
+            /* Reduced blue neon glow for section titles */
+            text-shadow:
+                0 0 1px #3B82F6,
+                0 0 2px #3B82F6;
+        }
+        .section-title {
+            position: relative;
+            padding-bottom: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .section-title::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            width: 60px;
+            height: 3px;
+            background-color: #3B82F6; /* Blue accent */
+            border-radius: 9999px;
+        }
+        .card {
+            background-color: #1c1c1c;
+            border-radius: 0.75rem;
+            padding: 0.8rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out, border-color 0.2s ease-in-out;
+            border: 1px solid transparent;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 0 8px rgba(59, 130, 246, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.06); /* Reduced glow on hover */
+            border-color: #3B82F6; /* Blue border on hover */
+        }
+
+        @keyframes flicker {
+            0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% {
+                text-shadow:
+                    0 0 1px #00FFFF,
+                    0 0 2px #00FFFF,
+                    0 0 4px #3B82F6;
+            }
+            20%, 24%, 55% {
+                text-shadow: none;
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .animate-fade-in {
+            animation: fadeIn 1s ease-out forwards;
+        }
+
+        /* Flag icon styling */
+        .flag-icon {
+            display: inline-block;
+            width: 0.8em;
+            height: 0.8em;
+            margin-left: 0.2em;
+            vertical-align: middle;
+            border-radius: 0.15em;
+            box-shadow: 0 0 2px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Skill tag styling */
+        .skill-tag {
+            background-color: #2d3748;
+            color: #e2e8f0;
+            padding: 0.15rem 0.4rem;
+            border-radius: 0.2rem;
+            border: 1px solid #002B5B; /* Dark blue border */
+            font-size: 0.7rem;
+            transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out;
+        }
+        .skill-tag:hover {
+            background-color: #002B5B; /* Darker blue on hover */
+            border-color: #3B82F6; /* Brighter blue border on hover */
+        }
+
+        /* Horizontal Scroll Container */
+        #scroll-container {
+            display: flex;
+            width: 100vw;
+            height: 100vh;
+            overflow-x: scroll;
+            overflow-y: hidden; /* Hide vertical scrollbar for the main container */
+            scroll-snap-type: x mandatory; /* Snap to sections */
+            -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Individual Sections for Horizontal Scroll */
+        #scroll-container section {
+            flex: 0 0 100vw;
+            scroll-snap-align: start;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 0.8rem 1.5rem;
+            box-sizing: border-box;
+            min-height: 100vh;
+            padding-top: 6rem; /* Space for desktop top nav or mobile header */
+        }
+
+        /* Specific styling for the 'home' section to make it smaller */
+        #scroll-container section#home {
+            padding: 0.5rem 1rem; /* Even smaller padding for home section */
+            padding-top: 5rem; /* Reduced top padding for home section */
+        }
+        #scroll-container section#home .content-wrapper {
+            max-width: 500px; /* Reduced max-width for home content */
+            font-size: inherit;
+        }
+        /* Allow h1 on home page to wrap, adjust line-height */
+        #scroll-container section#home .content-wrapper h1 {
+            font-size: 2.5rem; /* Reduced h1 size for home */
+            white-space: normal; /* Allow text to wrap */
+            overflow: visible; /* Allow overflow if necessary */
+            text-overflow: clip; /* Remove ellipsis */
+            max-width: 100%;
+            line-height: 1.1; /* Adjusted line height for better spacing */
+        }
+        #scroll-container section#home .content-wrapper p {
+            font-size: 1rem; /* Reduced p size for home */
+        }
+        #scroll-container section#home .content-wrapper .mb-5 {
+            margin-bottom: 0.8rem; /* Reduced margin for profile pic */
+        }
+        #scroll-container section#home .content-wrapper .w-20 {
+            width: 60px; /* Smaller profile pic */
+            height: 60px;
+        }
+        #scroll-container section#home .content-wrapper .mt-5 {
+            margin-top: 0.8rem; /* Reduced margin for contact links */
+        }
+        #scroll-container section#home .content-wrapper .gap-3 {
+            gap: 0.5rem; /* Reduced gap for contact links */
+        }
+        #scroll-container section#home .content-wrapper .text-sm {
+            font-size: 0.75rem; /* Reduced font size for contact links */
+        }
+        #scroll-container section#home .content-wrapper .w-4 {
+            width: 14px; /* Reduced icon size for contact links */
+            height: 14px;
+        }
+
+
+        /* Adjust content max-width and enable vertical scrolling within sections */
+        #scroll-container .content-wrapper {
+            max-width: 700px; /* Increased max-width for content */
+            width: 100%;
+            max-height: calc(100vh - 8rem);
+            overflow-y: auto; /* Re-enabled vertical scrollbar */
+            padding-right: 0.75rem; /* Added padding for scrollbar */
+            font-size: 0.8rem;
+        }
+        #scroll-container .content-wrapper h2 {
+            font-size: 1.8rem;
+        }
+        #scroll-container .content-wrapper h3 {
+            font-size: 0.95rem;
+        }
+        #scroll-container .content-wrapper p {
+            font-size: 0.8rem;
+        }
+        #scroll-container .content-wrapper ul li {
+            font-size: 0.75rem;
+        }
+
+
+        /* Fixed Navigation Bar */
+        #top-nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 50;
+            background-color: rgba(0, 0, 0, 0.95);
+            border-bottom: 1px solid #002B5B; /* Dark blue border */
+            padding: 0.5rem 0;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            display: none; /* Hidden by default, shown on md and up */
+        }
+        @media (min-width: 768px) { /* md breakpoint */
+            #top-nav {
+                display: flex; /* Show on desktop */
+            }
+        }
+        #top-nav .nav-link {
+            padding: 0.3rem 0.7rem;
+            border-radius: 0.5rem;
+            transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+            color: #60A5FA; /* Blue neon link color */
+            font-weight: 500;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+        }
+        #top-nav .nav-link:hover {
+            background-color: #002B5B; /* Dark blue on hover */
+            box-shadow: 0 0 6px rgba(59, 130, 246, 0.3); /* Reduced glow on hover */
+            color: #e2e8f0;
+        }
+        /* Active nav link styling */
+        #top-nav .nav-link.active {
+            background-color: #002B5B; /* Dark blue */
+            color: #e2e8f0;
+            /* Further reduced glow for active nav link text */
+            text-shadow:
+                0 0 0.25px #00FFFF,
+                0 0 0.5px #00FFFF,
+                0 0 1px #3B82F6;
+            /* Further reduced glow for active nav link box-shadow */
+            box-shadow: 0 0 3px rgba(59, 130, 246, 0.2);
+        }
+
+
+        /* Mobile Header (visible on small screens) */
+        #mobile-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 50;
+            background-color: rgba(0, 0, 0, 0.95);
+            border-bottom: 1px solid #002B5B;
+            padding: 0.75rem 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        @media (min-width: 768px) { /* md breakpoint */
+            #mobile-header {
+                display: none; /* Hide on desktop */
+            }
+        }
+        #mobile-header .header-title {
+            color: #60A5FA;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+        #mobile-header .hamburger-icon {
+            cursor: pointer;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+            padding: 5px;
+        }
+        #mobile-header .hamburger-icon span {
+            display: block;
+            width: 100%;
+            height: 3px;
+            background-color: #60A5FA;
+            border-radius: 2px;
+            transition: all 0.3s ease-in-out;
+            filter: drop-shadow(0 0 2px #00FFFF);
+        }
+
+        /* Mobile Menu Overlay */
+        #mobile-menu-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: rgba(0, 0, 0, 0.98);
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+        }
+        #mobile-menu-overlay.open {
+            opacity: 1;
+            visibility: visible;
+        }
+        #mobile-menu-overlay .close-button {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            color: #60A5FA;
+            font-size: 2rem;
+            cursor: pointer;
+            filter: drop-shadow(0 0 5px #00FFFF);
+        }
+        #mobile-menu-overlay .mobile-nav-links {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            text-align: center;
+        }
+        #mobile-menu-overlay .mobile-nav-links .nav-link {
+            font-size: 1.5rem;
+            color: #60A5FA;
+            text-decoration: none;
+            transition: color 0.2s ease-in-out, text-shadow 0.2s ease-in-out;
+        }
+        #mobile-menu-overlay .mobile-nav-links .nav-link:hover {
+            color: #e2e8f0;
+            text-shadow: 0 0 5px #00FFFF, 0 0 10px #3B82F6;
+        }
+        /* Active nav link styling for mobile overlay */
+        #mobile-menu-overlay .mobile-nav-links .nav-link.active {
+            background-color: #002B5B; /* Dark blue */
+            color: #e2e8f0;
+            text-shadow:
+                0 0 0.5px #00FFFF, /* Less glow for mobile active link */
+                0 0 1px #00FFFF,
+                0 0 2px #3B82F6;
+            box-shadow: 0 0 4px rgba(59, 130, 246, 0.3);
+            padding: 0.75rem 1.5rem; /* Added padding */
+            border-radius: 0.75rem; /* Added border-radius */
+            display: inline-block; /* Ensure padding and border-radius apply */
+        }
+
+
+        /* Scroll Arrows */
+        .scroll-arrow {
+            position: fixed;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 60;
+            background-color: rgba(0, 0, 0, 0.6);
+            border: 1px solid #002B5B; /* Dark blue border */
+            border-radius: 50%;
+            padding: 0.5rem;
+            cursor: pointer;
+            transition: background-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out, opacity 0.3s ease-in-out;
+            opacity: 0.7;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .scroll-arrow:hover {
+            background-color: rgba(0, 255, 255, 0.15); /* Blue transparent, further reduced opacity */
+            box-shadow: 0 0 8px rgba(0, 255, 255, 0.5); /* Reduced glow */
+            opacity: 0.85;
+        }
+        .scroll-arrow svg {
+            width: 24px;
+            height: 24px;
+            stroke: #60A5FA; /* Blue neon color for arrow */
+            stroke-width: 2;
+            filter: drop-shadow(0 0 2px rgba(0, 255, 255, 0.3)); /* Further reduced glow */
+        }
+
+        #arrow-left {
+            left: 0.5rem;
+        }
+        #arrow-right {
+            right: 0.5rem;
+        }
+
+        /* Custom scrollbar for content-wrapper (Vertical) */
+        .content-wrapper::-webkit-scrollbar {
+            width: 6px;
+        }
+        .content-wrapper::-webkit-scrollbar-track {
+            background: #1c1c1c;
+            border-radius: 3px;
+        }
+        .content-wrapper::-webkit-scrollbar-thumb {
+            background: #60A5FA; /* Lighter blue, no glow */
+            border-radius: 3px;
+            box-shadow: none; /* Removed glow */
+        }
+        .content-wrapper::-webkit-scrollbar-thumb:hover {
+            background: #3B82F6; /* Slightly darker blue on hover */
+            box-shadow: none; /* Removed glow */
+        }
+
+        /* Hide horizontal scrollbar for webkit browsers */
+        #scroll-container::-webkit-scrollbar {
+            display: none;
+        }
+
+        /* Custom Horizontal Dots Navigation */
+        #dot-navigation {
+            position: fixed;
+            bottom: 0.8rem;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 55;
+            display: flex;
+            gap: 0.5rem;
+        }
+        .dot {
+            width: 8px;
+            height: 8px;
+            background-color: rgba(59, 130, 246, 0.2);
+            border-radius: 50%;
+            cursor: pointer;
+            transition: background-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+            border: 1px solid rgba(59, 130, 246, 0.3);
+        }
+        .dot:hover {
+            background-color: rgba(59, 130, 246, 0.4);
+            box-shadow: 0 0 6px rgba(59, 130, 246, 0.5);
+        }
+        .dot.active {
+            background-color: #00FFFF;
+            box-shadow:
+                0 0 3px #00FFFF,
+                0 0 6px #00FFFF,
+                0 0 9px #3B82F6;
+            border-color: #00FFFF;
+        }
+
+        /* Education Exchange Sub-block Styling (no vertical lines, with bullets) */
+        .education-exchanges-container {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid #2d3748; /* Subtle separator line */
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem; /* Space between exchange items */
+        }
+
+        .exchange-item {
+            position: relative;
+            padding-left: 1.5rem; /* Space for the custom bullet */
+        }
+
+        .exchange-item::before {
+            content: '\2022'; /* Unicode bullet point */
+            color: #60A5FA; /* Blue color for the bullet */
+            font-size: 1.2em;
+            position: absolute;
+            left: 0;
+            top: 0.2em; /* Adjust vertical alignment */
+            filter: drop-shadow(0 0 2px rgba(96, 165, 250, 0.5)); /* Subtle glow for the bullet */
+        }
+
+        .exchange-item .flex.items-start.mb-2 {
+            margin-bottom: 0.5rem; /* Adjust spacing below logo/title */
+        }
+
+        .exchange-item ul {
+            list-style: disc; /* Ensure disc bullet style */
+            list-style-position: inside; /* Keep bullets inside content flow */
+            padding-left: 0; /* Reset default padding */
+            margin-left: 0; /* Reset default margin */
+        }
+        .exchange-item ul li {
+            margin-left: 1.5em; /* Indent list items for readability */
+        }
+    </style>
+</head>
+<body class="antialiased leading-normal tracking-tight">
+
+    <!-- Canvas for dynamic background effects -->
+    <canvas id="neon-background-canvas"></canvas>
+
+    <!-- Fixed Desktop Navigation Bar (visible on md and larger) -->
+    <nav id="top-nav">
+        <div class="container mx-auto flex flex-wrap justify-center gap-x-4 gap-y-1 text-lg font-medium">
+            <a href="#home" class="nav-link">Home</a>
+            <a href="#about" class="nav-link">About Me</a>
+            <a href="#education" class="nav-link">Education</a>
+            <a href="#work-experience" class="nav-link">Experience</a>
+            <a href="#projects" class="nav-link">Projects</a>
+            <a href="#skills" class="nav-link">Skills</a>
+            <a href="#interests" class="nav-link">Interests</a>
+            <a href="#volunteer-experience" class="nav-link">Volunteer</a>
+            <a href="#contact-footer" class="nav-link">CV</a>
+        </div>
+    </nav>
+
+    <!-- Mobile Header (visible on small screens) -->
+    <div id="mobile-header">
+        <span class="header-title">Your CV</span>
+        <div class="hamburger-icon" id="hamburger-icon">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+    </div>
+
+    <!-- Mobile Menu Overlay (hidden by default) -->
+    <div id="mobile-menu-overlay">
+        <button class="close-button" id="close-mobile-menu">&times;</button>
+        <nav class="mobile-nav-links">
+            <a href="#home" class="nav-link">Home</a>
+            <a href="#about" class="nav-link">About Me</a>
+            <a href="#education" class="nav-link">Education</a>
+            <a href="#work-experience" class="nav-link">Experience</a>
+            <a href="#projects" class="nav-link">Projects</a>
+            <a href="#skills" class="nav-link">Skills</a>
+            <a href="#interests" class="nav-link">Interests</a>
+            <a href="#volunteer-experience" class="nav-link">Volunteer</a>
+            <a href="#contact-footer" class="nav-link">CV</a>
+        </nav>
+    </div>
+
+    <!-- Main Horizontal Scroll Container -->
+    <div id="scroll-container">
+
+        <!-- Header Section (This will be the first "page" of your horizontal scroll) -->
+        <section id="home" class="py-12 md:py-20 text-center flex flex-col justify-center items-center">
+            <div class="content-wrapper">
+                <!-- Profile Picture -->
+                <div class="mb-5">
+                    <img src="https://placehold.co/80x80/1c1c1c/60A5FA?text=Your+Pic" alt="Your Profile Picture"
+                         class="rounded-full w-20 h-20 mx-auto object-cover border-2 border-blue-500 shadow-lg transition-transform transform hover:scale-105">
+                </div>
+
+                <!-- Your Name with Typing Effect -->
+                <h1 id="your-name-heading" class="text-3xl md:text-4xl font-extrabold text-white mb-2 neon-text-main" data-full-name="Alejandro Ponce Fernandez"></h1>
+                <p class="text-base md:text-lg text-blue-400 animate-fade-in"> Future Data Scientist and Engineer | Future Telecommunications Engineer | AI & Finance </p>
+                <div class="mt-5 flex flex-wrap justify-center gap-3 text-sm">
+                    <a href="mailto:alex.poncef@gmail.com" class="text-gray-300 hover:text-blue-400 transition-colors duration-200 flex items-center">
+                        <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20"><path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"></path><path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"></path></svg>
+                        alex.poncef@gmail.com
+                    </a>
+                    <a href="https://linkedin.com/in/aponcefdez" target="_blank" class="text-gray-300 hover:text-blue-400 transition-colors duration-200 flex items-center">
+                        <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.3 0H3.7A3.7 3.7 0 000 3.7v12.6A3.7 3.7 0 003.7 20h12.6A3.7 3.7 0 0020 16.3V3.7A3.7 3.7 0 0016.3 0zM6.5 17.5h-3V7h3v10.5zM5 5.7a1.8 1.8 0 110-3.6 1.8 1.8 0 010 3.6zM17.5 17.5h-3V11c0-1.5-.7-2.5-1.9-2.5-1.1 0-1.7.7-1.9 1.4V17.5h-3V7h3v1.9c.5-.7 1.2-1.4 2.6-1.4 1.9 0 3.4 1.3 3.4 4.1v6z" clip-rule="evenodd"></path></svg>
+                        LinkedIn
+                    </a>
+                    <a href="https://github.com/pooonceee" target="_blank" class="text-gray-300 hover:text-blue-400 transition-colors duration-200 flex items-center">
+                        <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 0C4.477 0 0 4.477 0 10c0 4.418 2.865 8.163 6.839 9.489.5.092.682-.217.682-.483 0-.237-.009-.868-.014-1.703-2.782.604-3.369-1.34-3.369-1.34-.455-1.159-1.11-1.465-1.11-1.465-.908-.618.069-.606.069-.606 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.089 2.902.833.091-.647.35-1.089.636-1.338-2.22-.253-4.555-1.11-4.555-4.949 0-1.092.39-1.984 1.029-2.682-.103-.253-.446-1.27.097-2.651 0 0 .84-.269 2.75 1.025A9.432 9.432 0 0110 5.47c.85.006 1.705.115 2.504.337 1.909-1.294 2.747-1.025 2.747-1.025.546 1.381.202 2.398.099 2.651.64.698 1.027 1.59 1.027 2.682 0 3.848-2.338 4.691-4.566 4.941.359.308.678.915.678 1.846 0 1.333-.012 2.41-.012 2.736 0 .267.18.576.688.481C17.137 18.16 20 14.414 20 10A10 10 0 0010 0z" clip-rule="evenodd"></path></svg>
+                        GitHub
+                    </a>
+                </div>
+                <!-- Current Location -->
+                <div class="mt-3 flex items-center justify-center text-blue-400 text-sm">
+                    <svg class="w-4 h-4 mr-1.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"></path></svg>
+                    <span>Currently At: Barcelona, Spain</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- About Me Section -->
+        <section id="about">
+            <div class="content-wrapper card">
+                <h2 class="text-3xl font-bold section-title text-white mb-4 neon-text-section">About Me</h2>
+                <p class="text-lg text-gray-300 leading-relaxed">
+                    I am <strong>Alejandro Ponce Fernandez</strong>, a student at 
+                    <strong>Universidad Carlos III de Madrid</strong>, where I am pursuing a dual degree in 
+                    <strong>Data Science and Engineering</strong> and 
+                    <strong>Telecommunications Technologies Engineering</strong>. 
+                    I am passionate about using data and technology to create practical solutions and drive real-world impact.<br><br>
+                  </p>
+                
+                  <p class="text-lg text-gray-300 leading-relaxed">
+                    My academic and professional path has been shaped by international and hands-on experiences. 
+                    I studied at <strong>Nanyang Technological University in Singapore</strong>, where I explored global perspectives on innovation and technology. 
+                    I also worked for one year as a <strong>Data Management Technician at Kaptiva Sports</strong>, 
+                    helping to optimize operations for large-scale international events through tools like Python, Airtable, and APIs.<br><br>
+                  </p>
+                
+                  <p class="text-lg text-gray-300 leading-relaxed">
+                    Currently, I am an intern at <strong>Dow Jones</strong>, where I am learning how to integrate data science into real products, 
+                    gaining experience at the intersection of data, software, and user needs. 
+                    Next year, I will continue my studies at <strong>Purdue University</strong> in the United States 
+                    to deepen my technical expertise and broaden my international perspective.<br><br>
+                  </p>
+                
+                  <p class="text-lg text-gray-300 leading-relaxed">
+                    I enjoy working in collaborative environments where I can keep learning, contribute to meaningful projects, 
+                    and help turn ideas into impact through data and technology.<br><br>
+                  </p>
+            </div>
+        </section>
+
+        <!-- Education Section -->
+        <section id="education">
+            <div class="content-wrapper">
+                <h2 class="text-3xl font-bold section-title text-white mb-6 neon-text-section">Education</h2>
+                <div class="flex flex-col justify-center items-stretch gap-6">
+                    <div class="card">
+                        <div class="flex items-start mb-2">
+                            <img src="uc3m.jpg" alt="University Logo 1" class="rounded-full w-10 h-10 object-cover mr-3 border border-blue-500">
+                            <div>
+                                <h3 class="text-xl font-semibold text-blue-300">Dual BSc Data Science and Engineering & Telecommunications Technologies Engineering
+                                    <svg class="flag-icon" viewBox="0 0 30 20" xmlns="http://www.w3.org/2000/svg">
+                                        <!-- Top red stripe -->
+                                        <rect width="30" height="5" y="0" fill="#AA151B"/>
+                                        <!-- Middle yellow stripe -->
+                                        <rect width="30" height="10" y="5" fill="#F1BF00"/>
+                                        <!-- Bottom red stripe -->
+                                        <rect width="30" height="5" y="15" fill="#AA151B"/>
+                                      </svg>
+                                      
+                                </h3>
+                                <p class="text-gray-400">University Carlos III de Madrid, Madrid, Spain</p>
+                            </div>
+                        </div>
+                        <p class="text-sm text-gray-500 mb-3">September 2021 - Present</p>
+                        <ul class="list-disc list-inside text-gray-300 space-y-2 text-base">
+                            <li> <strong>Relevant Courses</strong>: Machine Learning I, Machine Learning II, Machine Learning Applications, Predictive Modeling, Statistical Learning,
+                                Statistical Signal Processing, High Frequency Technology, Photonics</li>
+                            <li><strong>Honors: </strong>Predictive Modeling, Advanced Knowledge of Spreadsheets </li>
+                            <li><strong>GPA:</strong> 8.0/10.0</li>
+                            <li><strong>Two year-long exchanges:</strong> Scholarship covered full tuition costs for each academic year.</li>
+                        </ul>
+
+                        <!-- Exchange Programs Container -->
+                        <div class="mt-4 pt-4 border-t border-gray-700 space-y-4">
+                            <!-- Exchange Program 1 Sub-block -->
+                            <div class="exchange-item">
+                                <div class="flex items-start mb-2">
+                                    <img src="Purdue3.jpg" alt="Exchange Logo 1" class="rounded-full w-8 h-8 object-cover mr-2 border border-blue-400">
+                                    <div>
+                                        <h4 class="text-lg font-semibold text-blue-300">Purdue University
+                                            <!-- Example: Germany Flag -->
+                                            <svg class="flag-icon" viewBox="0 0 30 20" xmlns="http://www.w3.org/2000/svg">
+                                                <!-- 13 stripes -->
+                                                <rect y="0" width="30" height="1.54" fill="#BF0A30"/>
+                                                <rect y="1.54" width="30" height="1.54" fill="#FFFFFF"/>
+                                                <rect y="3.08" width="30" height="1.54" fill="#BF0A30"/>
+                                                <rect y="4.62" width="30" height="1.54" fill="#FFFFFF"/>
+                                                <rect y="6.16" width="30" height="1.54" fill="#BF0A30"/>
+                                                <rect y="7.70" width="30" height="1.54" fill="#FFFFFF"/>
+                                                <rect y="9.24" width="30" height="1.54" fill="#BF0A30"/>
+                                                <rect y="10.78" width="30" height="1.54" fill="#FFFFFF"/>
+                                                <rect y="12.32" width="30" height="1.54" fill="#BF0A30"/>
+                                                <rect y="13.86" width="30" height="1.54" fill="#FFFFFF"/>
+                                                <rect y="15.40" width="30" height="1.54" fill="#BF0A30"/>
+                                                <rect y="16.94" width="30" height="1.54" fill="#FFFFFF"/>
+                                                <rect y="18.48" width="30" height="1.54" fill="#BF0A30"/>
+                                              
+                                                <!-- Blue canton -->
+                                                <rect width="12" height="10.78" fill="#002868"/>
+                                              
+                                                <!-- Star dots in canton -->
+                                                <g fill="white">
+                                                  <!-- 6 rows of stars -->
+                                                  <circle cx="1" cy="1" r="0.2"/>
+                                                  <circle cx="3" cy="1" r="0.2"/>
+                                                  <circle cx="5" cy="1" r="0.2"/>
+                                                  <circle cx="7" cy="1" r="0.2"/>
+                                                  <circle cx="9" cy="1" r="0.2"/>
+                                                  <circle cx="11" cy="1" r="0.2"/>
+                                              
+                                                  <circle cx="2" cy="2" r="0.2"/>
+                                                  <circle cx="4" cy="2" r="0.2"/>
+                                                  <circle cx="6" cy="2" r="0.2"/>
+                                                  <circle cx="8" cy="2" r="0.2"/>
+                                                  <circle cx="10" cy="2" r="0.2"/>
+                                              
+                                                  <circle cx="1" cy="3" r="0.2"/>
+                                                  <circle cx="3" cy="3" r="0.2"/>
+                                                  <circle cx="5" cy="3" r="0.2"/>
+                                                  <circle cx="7" cy="3" r="0.2"/>
+                                                  <circle cx="9" cy="3" r="0.2"/>
+                                                  <circle cx="11" cy="3" r="0.2"/>
+                                              
+                                                  <circle cx="2" cy="4" r="0.2"/>
+                                                  <circle cx="4" cy="4" r="0.2"/>
+                                                  <circle cx="6" cy="4" r="0.2"/>
+                                                  <circle cx="8" cy="4" r="0.2"/>
+                                                  <circle cx="10" cy="4" r="0.2"/>
+                                              
+                                                  <circle cx="1" cy="5" r="0.2"/>
+                                                  <circle cx="3" cy="5" r="0.2"/>
+                                                  <circle cx="5" cy="5" r="0.2"/>
+                                                  <circle cx="7" cy="5" r="0.2"/>
+                                                  <circle cx="9" cy="5" r="0.2"/>
+                                                  <circle cx="11" cy="5" r="0.2"/>
+                                              
+                                                  <circle cx="2" cy="6" r="0.2"/>
+                                                  <circle cx="4" cy="6" r="0.2"/>
+                                                  <circle cx="6" cy="6" r="0.2"/>
+                                                  <circle cx="8" cy="6" r="0.2"/>
+                                                  <circle cx="10" cy="6" r="0.2"/>
+
+                                                  <circle cx="1" cy="7" r="0.2"/>
+                                                  <circle cx="3" cy="7" r="0.2"/>
+                                                  <circle cx="5" cy="7" r="0.2"/>
+                                                  <circle cx="7" cy="7" r="0.2"/>
+                                                  <circle cx="9" cy="7" r="0.2"/>
+                                                  <circle cx="11" cy="7" r="0.2"/>
+
+                                                  <circle cx="2" cy="8" r="0.2"/>
+                                                  <circle cx="4" cy="8" r="0.2"/>
+                                                  <circle cx="6" cy="8" r="0.2"/>
+                                                  <circle cx="8" cy="8" r="0.2"/>
+                                                  <circle cx="10" cy="8" r="0.2"/>
+
+                                                  <circle cx="1" cy="9" r="0.2"/>
+                                                  <circle cx="3" cy="9" r="0.2"/>
+                                                  <circle cx="5" cy="9" r="0.2"/>
+                                                  <circle cx="7" cy="9" r="0.2"/>
+                                                  <circle cx="9" cy="9" r="0.2"/>
+                                                  <circle cx="11" cy="9" r="0.2"/>
+                                                </g>
+                                              </svg>
+                                              
+                                        </h4>
+                                        <p class="text-gray-400 text-sm">West Lafayette, United States</p>
+                                    </div>
+                                </div>
+                                <p class="text-sm text-gray-500 mb-2">August 2025 - May 2026</p>
+                                <ul class="list-disc list-inside text-gray-300 space-y-1 text-sm pl-4">
+                                    <li>Relevant Courses: </li>
+                                    <li>Key projects:</li>
+                                </ul>
+                            </div>
+
+                            <!-- Exchange Program 2 Sub-block -->
+                            <div class="exchange-item">
+                                <div class="flex items-start mb-2">
+                                    <img src="logo NTU.jpg" alt="Exchange Logo 2" class="rounded-full w-8 h-8 object-cover mr-2 border border-blue-400">
+                                    <div>
+                                        <h4 class="text-lg font-semibold text-blue-300">Nanyang Technological University
+                                            <!-- Example: France Flag -->
+                                            <svg class="flag-icon" viewBox="0 0 30 20" xmlns="http://www.w3.org/2000/svg">
+
+                                                <!-- Top half red -->
+                                                <rect width="30" height="10" y="0" fill="#EF2B2D" />
+                                              
+                                                <!-- Bottom half white -->
+                                                <rect width="30" height="10" y="10" fill="#FFFFFF" />
+                                              
+                                                <!-- Canton -->
+                                                <rect width="12" height="10" y="0" fill="#EF2B2D" />
+                                              
+                                                <g fill="#FFFFFF" transform="translate(3.2,1) scale(0.75)">
+                                                  <!-- Outer circle -->
+                                                  <circle cx="3" cy="5" r="4.5" />
+                                                  <!-- Inner circle bigger radius, shifted right for thinner crescent -->
+                                                  <circle cx="5" cy="5" r="4.4" fill="#EF2B2D" />
+                                                </g>
+                                              
+                                                <!-- Stars -->
+                                                <g fill="#FFFFFF" transform="translate(7,3) scale(0.09)">
+                                                  <defs>
+                                                    <polygon id="star" points="10,0 12.94,6.94 20,7.63 14,12.45 16,19.4 10,15 4,19.4 6,12.45 0,7.63 7.06,6.94" />
+                                                  </defs>
+                                              
+                                                  <!-- Even wider spacing -->
+                                                  <use href="#star" x="-4" y="3" />
+                                                  <use href="#star" x="10" y="0" />
+                                                  <use href="#star" x="26" y="3" />
+                                                  <use href="#star" x="24" y="20" />
+                                                  <use href="#star" x="8" y="20" />
+                                                </g>
+                                              
+                                              </svg>
+                                              
+                                        </h4>
+                                        <p class="text-gray-400 text-sm">Singapore, Singapore</p>
+                                    </div>
+                                </div>
+                                <p class="text-sm text-gray-500 mb-2">August 2023 - May 2024</p>
+                                <ul class="list-disc list-inside text-gray-300 space-y-1 text-sm pl-4">
+                                    <li>Relevant Courses: Neural Networks and Deep Learning, Basic Optimization, Big Data Management, Robotics</li>
+                                    <li>Key projects: Gender and Age prediction using CNNs</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="flex items-start mb-2"> <!-- Flex container for logo and title/university -->
+                            <img src="mirabal.png" alt="University Logo 2" class="rounded-full w-10 h-10 object-cover mr-3 border border-blue-500">
+                            <div>
+                                <h3 class="text-xl font-semibold text-blue-300">Internation Baccalaureate - Diploma Program
+                                    <!-- Example: UK Flag -->
+                                    <svg class="flag-icon" viewBox="0 0 30 20" xmlns="http://www.w3.org/2000/svg">
+                                        <!-- Top red stripe -->
+                                        <rect width="30" height="5" y="0" fill="#AA151B"/>
+                                        <!-- Middle yellow stripe -->
+                                        <rect width="30" height="10" y="5" fill="#F1BF00"/>
+                                        <!-- Bottom red stripe -->
+                                        <rect width="30" height="5" y="15" fill="#AA151B"/>
+                                      </svg>
+                                </h3>
+                                <p class="text-gray-400">Mirabal Internation School, Madrid, Spain</p>
+                            </div>
+                        </div>
+                        <p class="text-sm text-gray-500 mb-3">September 2019 - May 2021</p>
+                        <ul class="list-disc list-inside text-gray-300 space-y-2 text-base">
+                            <li><strong>Grade: </strong>44/45</li>
+                            <li><strong>Courses: </strong>HL Mathematics AA, HL Phyiscs, HL English B, SL Chemistry, SL Business Management, SL Spanish A</li>
+                            <li><strong>First in Class, gained national news recognition: </strong> <a href="https://www.elmundo.es/madrid/2021/10/05/615b19b8fc6c83fc138b45d7.html" target="_blank" style="color: rgb(143, 143, 212); text-decoration: underline;">View article</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Work Experience Section -->
+        <section id="work-experience">
+            <div class="content-wrapper">
+                <h2 class="text-3xl font-bold section-title text-white mb-6 neon-text-section">Work Experience</h2>
+                <div class="space-y-8">
+                    <div class="card">
+                        <div class="flex items-start mb-2"> <!-- Flex container for logo and title/company -->
+                            <img src="DJ.png" alt="Company Logo 1" class="rounded-full w-10 h-10 object-cover mr-3 border border-blue-500">
+                            <div>
+                                <h3 class="text-xl font-semibold text-blue-300">Dow Jones - Data Science Intern</h3>
+                                <p class="text-gray-400">Barcelona, Spain</p>
+                            </div>
+                        </div>
+                        <p class="text-sm text-gray-500 mb-3">June 2025 - Present</p>
+                        <ul class="list-disc list-inside text-gray-300 space-y-2 text-base">
+                            <li></li>
+                            <li></li>
+                            <li></li>
+                            <li></li>
+                        </ul>
+                    </div>
+                    <div class="card">
+                        <div class="flex items-start mb-2"> <!-- Flex container for logo and title/company -->
+                            <img src="ks.jpg" alt="Company Logo 2" class="rounded-full w-10 h-10 object-cover mr-3 border border-blue-500">
+                            <div>
+                                <h3 class="text-xl font-semibold text-blue-300">Kaptiva Sports - Data Management Technician</h3>
+                                <p class="text-gray-400">Remote</p>
+                            </div>
+                        </div>
+                        <p class="text-sm text-gray-500 mb-3">June 2024 - June 2025</p>
+                        <ul class="list-disc list-inside text-gray-300 space-y-2 text-base">
+                            <li>Proposed, designed, and implemented a real-time integration pipeline between Cvent and Airtable using REST APIs, Webhooks, and AWS services to enable seamless and automated data flow.</li>
+                            <li>Managed a database of over 100,000 clients and 1,000+ events in Cvent, ensuring data accuracy and integrity.</li>
+                            <li>Developed 10+ internal event management apps using Softr, integrated with AirTable, and enhanced with
+                                custom Java, CSS, and HTML for advanced functionality.</li>
+                            <li>Automated the generation of weekly sales reports using Python, providing visual insights for data analysis.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Projects Section -->
+        <section id="projects">
+            <div class="content-wrapper">
+                <h2 class="text-3xl font-bold section-title text-white mb-6 neon-text-section">Projects</h2>
+                <div class="space-y-8">
+                    <div class="card">
+                        <div class="flex justify-between items-start mb-2">
+                            <div>
+                                <h3 class="text-xl font-semibold text-blue-300">AI-Powered Chatbot</h3>
+                                <p class="text-gray-400">Technologies: Python, TensorFlow, Flask, React</p>
+                            </div>
+                            <p class="text-sm text-gray-500">Jan 20XX – Mar 20XX</p>
+                        </div>
+                        <ul class="list-disc list-inside text-gray-300 space-y-2 text-base">
+                            <li>Developed a conversational AI chatbot capable of natural language understanding and generation for customer support.</li>
+                            <li>Implemented a deep learning model for intent recognition and entity extraction, achieving 90% accuracy.</li>
+                            <li>Designed and built a responsive web interface for the chatbot using React.js.</li>
+                            <li><a href="https://github.com/yourprofile/chatbot-project" target="_blank" class="text-blue-400 hover:underline">GitHub Repository</a> | <a href="#" target="_blank" class="text-blue-400 hover:underline">Live Demo</a></li>
+                        </ul>
+                    </div>
+                    <div class="card">
+                        <div class="flex justify-between items-start mb-2">
+                            <div>
+                                <h3 class="text-xl font-semibold text-blue-300">Decentralized Voting System</h3>
+                                <p class="text-gray-400">Technologies: Solidity, Ethereum, Web3.js, Node.js</p>
+                            </div>
+                            <p class="text-sm text-gray-500">Apr 20XX – Jun 20XX</p>
+                        </div>
+                        <ul class="list-disc list-inside text-gray-300 space-y-2 text-base">
+                            <li>Created a secure and transparent decentralized voting application on the Ethereum blockchain.</li>
+                            <li>Developed smart contracts in Solidity to manage voter registration and vote casting.</li>
+                            <li>Built a user-friendly front-end application using Web3.js to interact with the blockchain.</li>
+                            <li><a href="https://github.com/yourprofile/voting-system" target="_blank" class="text-blue-400 hover:underline">GitHub Repository</a> | <a href="#" target="_blank" class="text-blue-400 hover:underline">Live Demo</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Skills Section -->
+        <section id="skills">
+            <div class="content-wrapper card">
+                <h2 class="text-3xl font-bold section-title text-white mb-6 neon-text-section">Skills</h2>
+                <div class="space-y-6">
+                    <div>
+                        <h3 class="text-xl font-semibold text-blue-300 mb-2">Programming Languages</h3>
+                        <div class="flex flex-wrap gap-3">
+                            <span class="skill-tag">Python</span>
+                            <span class="skill-tag">JavaScript</span>
+                            <span class="skill-tag">Java</span>
+                            <span class="skill-tag">C++</span>
+                            <span class="skill-tag">Go</span>
+                            <span class="skill-tag">TypeScript</span>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-semibold text-blue-300 mb-2">Frameworks & Libraries</h3>
+                        <div class="flex flex-wrap gap-3">
+                            <span class="skill-tag">React.js</span>
+                            <span class="skill-tag">Node.js</span>
+                            <span class="skill-tag">Express.js</span>
+                            <span class="skill-tag">FastAPI</span>
+                            <span class="skill-tag">Spring Boot</span>
+                            <span class="skill-tag">TensorFlow</span>
+                            <span class="skill-tag">PyTorch</span>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-semibold text-blue-300 mb-2">Databases</h3>
+                        <div class="flex flex-wrap gap-3">
+                            <span class="skill-tag">PostgreSQL</span>
+                            <span class="skill-tag">MongoDB</span>
+                            <span class="skill-tag">MySQL</span>
+                            <span class="skill-tag">Firebase</span>
+                            <span class="skill-tag">Redis</span>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-semibold text-blue-300 mb-2">Cloud Platforms</h3>
+                        <div class="flex flex-wrap gap-3">
+                            <span class="skill-tag">AWS</span>
+                            <span class="skill-tag">Google Cloud Platform (GCP)</span>
+                            <span class="skill-tag">Azure</span>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-semibold text-blue-300 mb-2">Tools & DevOps</h3>
+                        <div class="flex flex-wrap gap-3">
+                            <span class="skill-tag">Git</span>
+                            <span class="skill-tag">Docker</span>
+                            <span class="skill-tag">Kubernetes</span>
+                            <span class="skill-tag">Jenkins</span>
+                            <span class="skill-tag">Jira</span>
+                            <span class="skill-tag">Terraform</span>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-semibold text-blue-300 mb-2">Concepts & Methodologies</h3>
+                        <div class="flex flex-wrap gap-3">
+                            <span class="skill-tag">Microservices</span>
+                            <span class="skill-tag">RESTful APIs</span>
+                            <span class="skill-tag">Agile/Scrum</span>
+                            <span class="skill-tag">CI/CD</span>
+                            <span class="skill-tag">System Design</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Interests Section -->
+        <section id="interests">
+            <div class="content-wrapper card">
+                <h2 class="text-3xl font-bold section-title text-white mb-6 neon-text-section">Interests</h2>
+                <div class="flex flex-wrap gap-x-4 gap-y-2 text-gray-300">
+                    <div class="flex items-center">
+                        <span class="text-blue-400 mr-2">&bull;</span>
+                        <span class="font-medium">Artificial Intelligence Ethics</span>
+                    </div>
+                    <div class="flex items-center">
+                        <span class="text-blue-400 mr-2">&bull;</span>
+                        <span class="font-medium">Open Source Contributions</span>
+                    </div>
+                    <div class="flex items-center">
+                        <span class="text-blue-400 mr-2">&bull;</span>
+                        <span class="font-medium">Cybersecurity Research</span>
+                    </div>
+                    <div class="flex items-center">
+                        <span class="text-blue-400 mr-2">&bull;</span>
+                        <span class="font-medium">Competitive Programming</span>
+                    </div>
+                    <div class="flex items-center">
+                        <span class="text-blue-400 mr-2">&bull;</span>
+                        <span class="font-medium">Sci-Fi Literature</span>
+                    </div>
+                    <div class="flex items-center">
+                        <span class="text-blue-400 mr-2">&bull;</span>
+                        <span class="font-medium">Retro Gaming</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Volunteer Experience Section -->
+        <section id="volunteer-experience">
+            <div class="content-wrapper">
+                <h2 class="text-3xl font-bold section-title text-white mb-6 neon-text-section">Volunteer Experience</h2>
+                <div class="space-y-8">
+                    <div class="card">
+                        <div class="flex items-start mb-2"> <!-- Flex container for logo and title/company -->
+                            <img src="https://placehold.co/40x40/1c1c1c/60A5FA?text=V1" alt="Volunteer Logo 1" class="rounded-full w-10 h-10 object-cover mr-3 border border-blue-500">
+                            <div>
+                                <h3 class="text-xl font-semibold text-blue-300">School Teacher</h3>
+                                <p class="text-gray-400">Moita Massai Village, Arusha, Tanzania</p>
+                            </div>
+                        </div>
+                        <p class="text-sm text-gray-500 mb-3">August 2021</p>
+                        <ul class="list-disc list-inside text-gray-300 space-y-2 text-base">
+                            <li>Lived in Moita Massai Village, rural Tanzania.</li>
+                            <li>Taught Mathematics and English to children aged 3–18 on a daily basis.</li>
+                            <li>Assisted with solar panel installation to provide access to electricity.</li>
+                        </ul>
+                    </div>
+                    
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer (within its own section for horizontal scroll) -->
+        <section id="contact-footer">
+            <div class="content-wrapper text-center text-gray-500 text-sm">
+                <p style="font-size: 1.25rem; color: #ffffff; font-weight: 500;">
+                    If you'd like to connect, have any questions or want to share an opportunity, feel free to reach out. I would love to hear from you! <br><br>
+                  </p>                  
+                <p>&copy; 2025 Alejandro Ponce Fernandez. All rights reserved.</p>
+                <a href="your_cv.pdf" download="Your_Name_CV.pdf"
+                   class="mt-4 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200">
+                    <svg class="-ml-0.5 mr-2 h-4 w-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+                    Download CV
+                </a>
+            </div>
+        </section>
+
+    </div> <!-- End of #scroll-container -->
+
+    <!-- Scroll Arrows -->
+    <div id="arrow-left" class="scroll-arrow">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-left">
+            <polyline points="15 18 9 12 15 6"></polyline>
+        </svg>
+    </div>
+    <div id="arrow-right" class="scroll-arrow">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-right">
+            <polyline points="9 18 15 12 9 6"></polyline>
+        </svg>
+    </div>
+
+    <!-- Custom Horizontal Dots Navigation -->
+    <div id="dot-navigation"></div>
+
+    <script>
+        // JavaScript for the typing effect
+        function typeWriter(elementId, text, i, speed) {
+            const element = document.getElementById(elementId);
+            if (!element) return;
+
+            if (i < text.length) {
+                element.innerHTML += text.charAt(i);
+                i++;
+                setTimeout(() => typeWriter(elementId, text, i, speed), speed);
+            } else {
+                element.classList.add('neon-text-main-active');
+            }
+        }
+
+        // JavaScript for the dynamic background
+        const canvas = document.getElementById('neon-background-canvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+        const numParticles = 400; /* Increased number of particles for continuous flow */
+        const particleSpeed = 2.5; /* Increased particle speed for continuous flow */
+        const particleLength = 30; /* Slightly longer particles */
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+
+        class Particle {
+            constructor() {
+                this.reset();
+                // Ensure particles start across the entire screen for a continuous look
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+            }
+
+            reset() {
+                // Reset particles to the left edge or slightly off-screen left
+                this.x = -this.length; // Start just off-screen left
+                this.y = Math.random() * canvas.height;
+                this.speed = particleSpeed + Math.random() * 0.5;
+                this.opacity = 0.1 + Math.random() * 0.2;
+                this.length = particleLength + Math.random() * 10;
+            }
+
+            update() {
+                this.x += this.speed;
+                if (this.x > canvas.width + this.length) { // Reset when fully off-screen right
+                    this.reset();
+                }
+            }
+
+            draw() {
+                ctx.beginPath();
+                ctx.moveTo(this.x, this.y);
+                ctx.lineTo(this.x + this.length, this.y);
+                ctx.strokeStyle = `rgba(0, 255, 255, ${this.opacity})`; /* Blue particles */
+                ctx.lineWidth = 1.5;
+                ctx.shadowBlur = 20; /* Further increased glow for background particles */
+                ctx.shadowColor = 'rgba(0, 255, 255, 1)'; /* More opaque glow color */
+                ctx.stroke();
+            }
+        }
+
+        function animateBackground() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.shadowBlur = 0;
+
+            for (let i = 0; i < particles.length; i++) {
+                particles[i].update();
+                particles[i].draw();
+            }
+            requestAnimationFrame(animateBackground);
+        }
+
+        // --- Horizontal Scroll Navigation Logic ---
+        const scrollContainer = document.getElementById('scroll-container');
+        const sections = Array.from(scrollContainer.querySelectorAll('section')); // All sections
+        const navLinks = document.querySelectorAll('#top-nav .nav-link');
+        const dotNavigation = document.getElementById('dot-navigation');
+        const arrowLeft = document.getElementById('arrow-left');
+        const arrowRight = document.getElementById('arrow-right');
+        let currentSectionIndex = 0; // Index in the *real* sections array (0 to sections.length - 1)
+
+        // Mobile menu elements
+        const hamburgerIcon = document.getElementById('hamburger-icon');
+        const mobileMenuOverlay = document.getElementById('mobile-menu-overlay');
+        const closeMobileMenuButton = document.getElementById('close-mobile-menu');
+        const mobileNavLinks = mobileMenuOverlay.querySelectorAll('.nav-link');
+
+
+        // Function to create dots for navigation
+        function createDots() {
+            dotNavigation.innerHTML = ''; // Clear existing dots
+            sections.forEach((section, index) => {
+                const dot = document.createElement('div');
+                dot.classList.add('dot');
+                dot.dataset.index = index;
+                dot.addEventListener('click', () => scrollToSection(index));
+                dotNavigation.appendChild(dot);
+            });
+        }
+
+        // Function to update active states of nav links and dots
+        function updateActiveStates() {
+            // Update active nav link (desktop)
+            navLinks.forEach((link, index) => {
+                if (index === currentSectionIndex) {
+                    link.classList.add('active');
+                } else {
+                    link.classList.remove('active');
+                }
+            });
+
+            // Update active nav link (mobile overlay)
+            mobileNavLinks.forEach((link, index) => {
+                if (index === currentSectionIndex) {
+                    link.classList.add('active');
+                } else {
+                    link.classList.remove('active');
+                }
+            });
+
+
+            // Update active dot
+            const dots = dotNavigation.querySelectorAll('.dot');
+            dots.forEach((dot, index) => {
+                if (index === currentSectionIndex) {
+                    dot.classList.add('active');
+                } else {
+                    dot.classList.remove('active');
+                }
+            });
+
+            // Update arrow visibility for linear scrolling
+            if (currentSectionIndex === 0) {
+                arrowLeft.style.display = 'none';
+            } else {
+                arrowLeft.style.display = 'flex';
+            }
+
+            if (currentSectionIndex === sections.length - 1) {
+                arrowRight.style.display = 'none';
+            } else {
+                arrowRight.style.display = 'flex';
+            }
+        }
+
+        // Function to scroll to a section
+        function scrollToSection(index) {
+            if (index >= 0 && index < sections.length) {
+                sections[index].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'start' });
+                currentSectionIndex = index;
+                updateActiveStates();
+                // Close mobile menu if open
+                mobileMenuOverlay.classList.remove('open');
+            }
+        }
+
+        // Arrow click handlers
+        arrowLeft.addEventListener('click', () => {
+            scrollToSection(currentSectionIndex - 1);
+        });
+
+        arrowRight.addEventListener('click', () => {
+            scrollToSection(currentSectionIndex + 1);
+        });
+
+        // Update currentSectionIndex when user manually scrolls
+        scrollContainer.addEventListener('scroll', () => {
+            const scrollLeft = scrollContainer.scrollLeft;
+            const vw = window.innerWidth;
+            const newIndex = Math.round(scrollLeft / vw);
+
+            if (newIndex !== currentSectionIndex) {
+                currentSectionIndex = newIndex;
+                updateActiveStates();
+            }
+        });
+
+        // Nav link click handlers (desktop)
+        navLinks.forEach((link, index) => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault(); // Prevent default hash scroll
+                const targetId = link.getAttribute('href').substring(1);
+                const realIndex = sections.findIndex(section => section.id === targetId);
+                if (realIndex !== -1) {
+                    scrollToSection(realIndex);
+                }
+            });
+        });
+
+        // Mobile menu event listeners
+        hamburgerIcon.addEventListener('click', () => {
+            mobileMenuOverlay.classList.add('open');
+        });
+
+        closeMobileMenuButton.addEventListener('click', () => {
+            mobileMenuOverlay.classList.remove('open');
+        });
+
+        mobileNavLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault(); // Prevent default hash scroll
+                const targetId = link.getAttribute('href').substring(1);
+                const realIndex = sections.findIndex(section => section.id === targetId);
+                if (realIndex !== -1) {
+                    scrollToSection(realIndex);
+                }
+            });
+        });
+
+
+        // Initial setup on window load
+        window.onload = function() {
+            // Initialize typing effect for the main name
+            const nameHeading = document.getElementById('your-name-heading');
+            if (nameHeading) {
+                const fullName = nameHeading.getAttribute('data-full-name');
+                nameHeading.innerHTML = ''; // Clear content before typing
+                typeWriter('your-name-heading', fullName, 0, 100); // Adjust speed
+            }
+
+            // Initialize dynamic background
+            resizeCanvas();
+            window.addEventListener('resize', resizeCanvas);
+
+            for (let i = 0; i < numParticles; i++) {
+                particles.push(new Particle());
+            }
+            animateBackground();
+
+            // Initialize dot navigation and active states
+            createDots();
+            updateActiveStates(); // Set initial active state for nav links and dots
+        };
+    </script>
+
+</body>
+</html>
